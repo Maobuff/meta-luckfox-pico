@@ -3,7 +3,7 @@ require recipes-bsp/u-boot/u-boot-common.inc
 
 PROVIDES = "virtual/bootloader"
 
-DEPENDS += "bc-native u-boot-tools-native"
+DEPENDS += "bc-native u-boot-tools-native dtc-native"
 
 PV = "2017.09"
 
@@ -32,6 +32,8 @@ do_configure:prepend() {
 RK_LOADER_BIN="loader.bin"
 RK_IDBLOCK_IMG="idblock.img"
 
+UBOOT_BINARY = "uboot.img"
+
 do_compile:append() {
         cd ${B}
 
@@ -39,8 +41,17 @@ do_compile:append() {
 	for d in make.sh scripts configs arch/arm/mach-rockchip; do
 		cp -rT ${S}/${d} ${d}
 	done
+        
+        case $RK_BOOTMEDIA in
+            spl-nor)
+                RK_BOOT_INI="../rkbin/RKBOOT/RV1106MINIALL_SPI_NOR.ini"
+                ;;
+            *)
+                RK_BOOT_INI="../rkbin/RKBOOT/RV1106MINIALL_SPI_NAND_TB.ini"
+                ;;
+        esac
 
-        ./make.sh --spl
+        ./make.sh --spl-new $RK_BOOT_INI
 
         ln -sf *_download_*.bin "${RK_LOADER_BIN}"
         ln -sf *_idblock_*.img "${RK_IDBLOCK_IMG}"
