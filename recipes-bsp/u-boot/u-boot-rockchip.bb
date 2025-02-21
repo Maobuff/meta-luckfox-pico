@@ -31,6 +31,7 @@ do_configure:prepend() {
 
 RK_LOADER_BIN="loader.bin"
 RK_IDBLOCK_IMG="idblock.img"
+RK_ENV_IMG="env.img"
 
 UBOOT_BINARY = "uboot.img"
 
@@ -42,6 +43,7 @@ do_compile:append() {
 		cp -rT ${S}/${d} ${d}
 	done
         
+        local RK_BOOT_INI
         case $RK_BOOTMEDIA in
             spl-nor)
                 RK_BOOT_INI="../rkbin/RKBOOT/RV1106MINIALL_SPI_NOR.ini"
@@ -50,6 +52,9 @@ do_compile:append() {
                 RK_BOOT_INI="../rkbin/RKBOOT/RV1106MINIALL_SPI_NAND_TB.ini"
                 ;;
         esac
+
+        echo "mtdparts=rk-nand:$(RK_ENV_PART)" > .env.txt
+        mkenvimage -s 8192 -p 0x0 -o env.img .env.txt
 
         ./make.sh --spl-new $RK_BOOT_INI
 
@@ -62,4 +67,5 @@ do_deploy:append() {
 
         install ${RK_LOADER_BIN} "${DEPLOYDIR}/${RK_LOADER_BIN}"
         install ${RK_IDBLOCK_IMG} "${DEPLOYDIR}/${RK_IDBLOCK_IMG}"
+        install ${RK_ENV_IMG} "${DEPLOYDIR}/${RK_ENV_IMG}"
 }
