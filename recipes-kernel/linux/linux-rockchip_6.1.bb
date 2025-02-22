@@ -12,7 +12,7 @@ require recipes-kernel/linux/linux-yocto.inc
 SRCREV = "${AUTOREV}"
 SRC_URI = " \
 	git://github.com/radxa/kernel.git;protocol=https;branch=linux-6.1-stan-rkr4.1-buildroot; \
-        file://luckfox_pico_max_defconfig \
+    file://luckfox_pico_max_defconfig \
 "
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
