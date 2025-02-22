@@ -22,6 +22,11 @@ EXTRA_OEMAKE += " KCFLAGS='\
     -Wno-error=address \
     -Wno-error=maybe-uninitialized' \
 "
+#TODO: check if CONFIG_FIT_IMAGE_POST_PROCESS=y is needed
+UBOOT_MACHINE += "${@oe.utils.conditional('RK_BOOTMEDIA', 'spi-nand', 'rk-sfc.config', '', d)}"
+UBOOT_MACHINE += "${@oe.utils.conditional('RK_BOOTMEDIA', 'spi-nor', 'rk-sfc.config', '', d)}"
+UBOOT_MACHINE += "${@oe.utils.conditional('RK_BOOTMEDIA', 'emmc', 'rk-emmc.config', '', d)}"
+UBOOT_MACHINE += "${@oe.utils.conditional('RK_BOOTMEDIA', 'sdcard', 'rk-emmc.config', '', d)}"
 
 do_configure:prepend() {
     sed -i -e '/^select_tool/d' -e '/^clean/d' -e '/^\t*make/d' -e '/which python2/{n;n;s/exit 1/true/}' ${S}/make.sh 
@@ -32,6 +37,7 @@ do_configure:prepend() {
 RK_LOADER_BIN = "loader.bin"
 RK_IDBLOCK_IMG = "idblock.img"
 RK_ENV_IMG = "env.img"
+RK_ENV_TXT = "env.txt"
 
 UBOOT_BINARY = "uboot.img"
 
@@ -43,20 +49,32 @@ do_compile:append() {
 		cp -rT ${S}/${d} ${d}
 	done
         
-    local RK_BOOT_INI
+    local RK_BOOT_INI="../rkbin/RKBOOT/RV1106MINIALL.ini"
+    #TODO: RK_ROOTFS_PART_NUM should be parsed from RK_ENV_PART
+    local RK_ROOTFS_PART_NUM=5
+
     case $RK_BOOTMEDIA in
+        emmc)
+            echo "blkdevparts=mmcblk0:$(RK_ENV_PART)" > .${RK_ENV_TXT}
+            echo "sys_bootargs=root=/dev/mmcblk0p$(RK_ROOTFS_PART_NUM)" >> .${RK_ENV_TXT}
+            ;;
+        sdcard)
+            echo "blkdevparts=mmcblk1:$(RK_ENV_PART)" > .${RK_ENV_TXT}
+            echo "sys_bootargs=root=/dev/mmcblk1p$(RK_ROOTFS_PART_NUM)" >> .${RK_ENV_TXT}
+            ;;
         spi-nor)
-            RK_BOOT_INI="../rkbin/RKBOOT/RV1106MINIALL_SPI_NOR.ini"
+            echo "mtdparts=sfc_nor:$(RK_ENV_PART)" > .${RK_ENV_TXT}
+            echo "sys_bootargs=root=/dev/mtdblock$(RK_ROOTFS_PART_NUM)" >> .${RK_ENV_TXT}
             ;;
         *)
-            RK_BOOT_INI="../rkbin/RKBOOT/RV1106MINIALL_SPI_NAND_TB.ini"
+            echo "mtdparts=rk-nand:$(RK_ENV_PART)" > .${RK_ENV_TXT}
+            echo "sys_bootargs=root=ubi.mtd=$(RK_ROOTFS_PART_NUM)" >> .${RK_ENV_TXT}
             ;;
     esac
 
-    echo "mtdparts=rk-nand:$(RK_ENV_PART)" > .env.txt
-    mkenvimage -s 8192 -p 0x0 -o env.img .env.txt
+    mkenvimage -s ${RK_ENV_SIZE} -p 0x0 -o ${RK_ENV_IMG} .${RK_ENV_TXT}
 
-    ./make.sh --spl-new $RK_BOOT_INI
+    ./make.sh --spl-new ${RK_BOOT_INI}
 
     ln -sf *_download_*.bin "${RK_LOADER_BIN}"
     ln -sf *_idblock_*.img "${RK_IDBLOCK_IMG}"
@@ -68,4 +86,5 @@ do_deploy:append() {
     install ${RK_LOADER_BIN} "${DEPLOYDIR}/${RK_LOADER_BIN}"
     install ${RK_IDBLOCK_IMG} "${DEPLOYDIR}/${RK_IDBLOCK_IMG}"
     install ${RK_ENV_IMG} "${DEPLOYDIR}/${RK_ENV_IMG}"
+    install .${RK_ENV_TXT} "${DEPLOYDIR}/${RK_ENV_TXT}"
 }
