@@ -51,24 +51,24 @@ do_compile:append() {
         
     local RK_BOOT_INI="../rkbin/RKBOOT/RV1106MINIALL.ini"
     #TODO: RK_ROOTFS_PART_NUM should be parsed from RK_ENV_PART
-    local RK_ROOTFS_PART_NUM=5
+    local RK_ROOTFS_PART_NUM=4
 
     case $RK_BOOTMEDIA in
         emmc)
-            echo "blkdevparts=mmcblk0:$(RK_ENV_PART)" > .${RK_ENV_TXT}
-            echo "sys_bootargs=root=/dev/mmcblk0p$(RK_ROOTFS_PART_NUM)" >> .${RK_ENV_TXT}
+            echo "blkdevparts=mmcblk0:${RK_ENV_PART}" > .${RK_ENV_TXT}
+            echo "sys_bootargs=root=/dev/mmcblk0p${RK_ROOTFS_PART_NUM}" >> .${RK_ENV_TXT}
             ;;
         sdcard)
-            echo "blkdevparts=mmcblk1:$(RK_ENV_PART)" > .${RK_ENV_TXT}
-            echo "sys_bootargs=root=/dev/mmcblk1p$(RK_ROOTFS_PART_NUM)" >> .${RK_ENV_TXT}
+            echo "blkdevparts=mmcblk1:${RK_ENV_PART}" > .${RK_ENV_TXT}
+            echo "sys_bootargs=root=/dev/mmcblk1p${RK_ROOTFS_PART_NUM}" >> .${RK_ENV_TXT}
             ;;
         spi-nor)
-            echo "mtdparts=sfc_nor:$(RK_ENV_PART)" > .${RK_ENV_TXT}
-            echo "sys_bootargs=root=/dev/mtdblock$(RK_ROOTFS_PART_NUM)" >> .${RK_ENV_TXT}
+            echo "mtdparts=sfc_nor:${RK_ENV_PART}" > .${RK_ENV_TXT}
+            echo "sys_bootargs=root=/dev/mtdblock${RK_ROOTFS_PART_NUM}" >> .${RK_ENV_TXT}
             ;;
         *)
-            echo "mtdparts=rk-nand:$(RK_ENV_PART)" > .${RK_ENV_TXT}
-            echo "sys_bootargs=root=ubi.mtd=$(RK_ROOTFS_PART_NUM)" >> .${RK_ENV_TXT}
+            echo "mtdparts=spi-nand0:${RK_ENV_PART}" > .${RK_ENV_TXT}
+            echo "sys_bootargs=root=/dev/mtdblock${RK_ROOTFS_PART_NUM}" >> .${RK_ENV_TXT}
             ;;
     esac
 
