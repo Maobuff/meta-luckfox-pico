@@ -6,4 +6,6 @@ PREFERRED_PROVIDER_virtual/kernel ?= "linux-rockchip"
 
 KERNEL_IMAGETYPE ?= "Image"
 
-#IMAGE_FSTYPES = "ubi ubifs"
+SERIAL_CONSOLES ?= "115200;ttyFIQ0"
+
+USE_VT = "0"
