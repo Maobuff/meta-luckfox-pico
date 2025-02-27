@@ -14,6 +14,7 @@ SRCREV_rkbin = "${AUTOREV}"
 SRC_URI = " \
 	git://github.com/radxa/u-boot.git;protocol=https;branch=next-dev-buildroot; \
     git://github.com/radxa/rkbin.git;protocol=https;branch=develop-v2024.10;name=rkbin;destsuffix=rkbin; \
+    file://relocated-environment.cfg \
 "
 SRCREV_FORMAT = "default_rkbin"
 
@@ -53,24 +54,10 @@ do_compile:append() {
     #TODO: RK_ROOTFS_PART_NUM should be parsed from RK_ENV_PART
     local RK_ROOTFS_PART_NUM=4
 
-    case $RK_BOOTMEDIA in
-        emmc)
-            echo "blkdevparts=mmcblk0:${RK_ENV_PART}" > .${RK_ENV_TXT}
-            echo "sys_bootargs=root=/dev/mmcblk0p${RK_ROOTFS_PART_NUM}" >> .${RK_ENV_TXT}
-            ;;
-        sdcard)
-            echo "blkdevparts=mmcblk1:${RK_ENV_PART}" > .${RK_ENV_TXT}
-            echo "sys_bootargs=root=/dev/mmcblk1p${RK_ROOTFS_PART_NUM}" >> .${RK_ENV_TXT}
-            ;;
-        spi-nor)
-            echo "mtdparts=sfc_nor:${RK_ENV_PART}" > .${RK_ENV_TXT}
-            echo "sys_bootargs=root=/dev/mtdblock${RK_ROOTFS_PART_NUM}" >> .${RK_ENV_TXT}
-            ;;
-        *)
-            echo "mtdparts=spi-nand0:${RK_ENV_PART}" > .${RK_ENV_TXT}
-            echo "sys_bootargs=root=/dev/mtdblock${RK_ROOTFS_PART_NUM}" >> .${RK_ENV_TXT}
-            ;;
-    esac
+    echo "blkdevparts=mmcblk1:${RK_ENV_PART}" > .${RK_ENV_TXT}
+    echo "sys_bootargs=root=/dev/mmcblk1p${RK_ROOTFS_PART_NUM}" >> .${RK_ENV_TXT}
+
+    bbplain $(cat .${RK_ENV_TXT})
 
     mkenvimage -s ${RK_ENV_SIZE} -p 0x0 -o ${RK_ENV_IMG} .${RK_ENV_TXT}
 
