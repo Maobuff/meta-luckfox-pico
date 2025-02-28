@@ -41,14 +41,17 @@
 	};
 
 	vdd_arm: vdd-arm {
-		compatible = "regulator-fixed";
+		compatible = "pwm-regulator";
+		pwms = <&pwm0 0 5000 1>;
 		regulator-name = "vdd_arm";
-		regulator-min-microvolt = <800000>;
-		regulator-max-microvolt = <1000000>;
-		regulator-init-microvolt = <900000>;
+		regulator-min-microvolt = <724000>;
+		regulator-max-microvolt = <1078000>;
+		regulator-init-microvolt = <950000>;
 		regulator-always-on;
 		regulator-boot-on;
+		regulator-settling-time-up-us = <250>;
 	};
+
 	leds: leds {
 		compatible = "gpio-leds";
 		work_led: work{
@@ -352,7 +355,8 @@
 
 // PWM
 &pwm0 {
-	pinctrl-0 = <&pwm0m1_pins>;
+	status = "okay";
+	pinctrl-0 = <&pwm0m0_pins>;
 };
 &pwm2 {
 	pinctrl-0 = <&pwm2m2_pins>;

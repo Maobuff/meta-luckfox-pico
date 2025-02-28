@@ -127,3 +127,7 @@
 &rtc {
 	status = "okay";
 };
+
+&wdt {
+	status = "okay";
+};
