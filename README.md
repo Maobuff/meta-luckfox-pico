@@ -45,11 +45,13 @@ IMAGE_INSTALL:append = " \
 "
 ```
 
-Run ```bitbake core-image-minimal``` to generate rootfs
 Run ```bitbake sdcard``` to generate SD card image
+
 Image will be located in ```/path/to/yocto/build/tmp/deploy/images/sdcard-MACHINE.img```
 
 III. TODO
 =========
 
 replace genimage with wic
+
+do pre create image task to generate env.img

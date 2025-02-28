@@ -52,7 +52,7 @@ do_compile:append() {
         
     local RK_BOOT_INI="../rkbin/RKBOOT/RV1106MINIALL.ini"
     #TODO: RK_ROOTFS_PART_NUM should be parsed from RK_ENV_PART
-    local RK_ROOTFS_PART_NUM=4
+    local RK_ROOTFS_PART_NUM=5
 
     echo "blkdevparts=mmcblk1:${RK_ENV_PART}" > .${RK_ENV_TXT}
     echo "sys_bootargs=root=/dev/mmcblk1p${RK_ROOTFS_PART_NUM}" >> .${RK_ENV_TXT}

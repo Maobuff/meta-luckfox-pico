@@ -8,7 +8,11 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ad
 
 SRC_URI += "file://genimage.config"
 
+DEPENDS += "genext2fs-native"
+
+GENIMAGE_VARIABLES[MACHINE] = "${MACHINE}"
+
 do_genimage[depends] += " \
     virtual/bootloader:do_deploy \
-    virtual/kernel:do_deploy \
+    core-image-minimal:do_image_complete \
 "
