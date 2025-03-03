@@ -27,7 +27,7 @@ EXTRA_OEMAKE += " KCFLAGS='\
 UBOOT_MACHINE += "${@oe.utils.conditional('RK_BOOTMEDIA', 'spi-nand', 'rk-sfc.config', '', d)}"
 UBOOT_MACHINE += "${@oe.utils.conditional('RK_BOOTMEDIA', 'spi-nor', 'rk-sfc.config', '', d)}"
 UBOOT_MACHINE += "${@oe.utils.conditional('RK_BOOTMEDIA', 'emmc', 'rk-emmc.config', '', d)}"
-UBOOT_MACHINE += "${@oe.utils.conditional('RK_BOOTMEDIA', 'sdcard', 'rk-emmc.config', '', d)}"
+UBOOT_MACHINE += "${@oe.utils.conditional('RK_BOOTMEDIA', 'sdcard', 'rk-sfc.config', '', d)}"
 
 do_configure:prepend() {
     sed -i -e '/^select_tool/d' -e '/^clean/d' -e '/^\t*make/d' -e '/which python2/{n;n;s/exit 1/true/}' ${S}/make.sh 
